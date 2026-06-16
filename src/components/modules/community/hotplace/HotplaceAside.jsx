@@ -63,6 +63,7 @@ const HotplaceAside = ({
   handleLikeClick,
   isReported,
   openReportModal,
+  likeLoading = false,
 }) => {
   return (
     <aside className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm lg:sticky lg:top-6 space-y-6 h-full">
@@ -129,6 +130,7 @@ const HotplaceAside = ({
         {/* 오른쪽: 좋아요 버튼 */}
         <button
           type="button"
+          disabled={likeLoading}
           onClick={handleLikeClick}
           className={`shrink-0 inline-flex min-w-[58px] cursor-pointer items-center gap-1.5 text-sm font-bold transition-colors active:scale-95 ${isLiked ? "text-blue-500" : "text-gray-900 hover:text-blue-500"}`}>
           <LikeIcon />

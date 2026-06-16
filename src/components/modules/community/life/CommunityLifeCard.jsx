@@ -100,6 +100,9 @@ const CommunityLifeCard = ({
 
   // 좋아요 버튼 클릭 시 실행될 함수
   onToggleLike,
+
+  // 좋아요 요청 중 여부
+  likeLoading = false,
 }) => {
   // 화면에 보여줄 좋아요 수
   const likeCount = post.wishCnt;
@@ -204,8 +207,10 @@ const CommunityLifeCard = ({
           <div className="absolute bottom-5 left-5 flex items-center gap-2 fs-down-1 font-bold text-gray-900 md:left-6">
             <button
               type="button"
+              disabled={likeLoading}
               onClick={(e) => {
                 e.stopPropagation();
+                if (likeLoading) return;
                 onToggleLike?.(post.id);
               }}
               className={`inline-flex min-w-[58px] cursor-pointer items-center gap-1.5 transition-colors active:scale-95 ${
