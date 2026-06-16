@@ -6,6 +6,8 @@ import { ThemeProvider } from '@context/ThemeContext'; //  위치 확인
 import MainHeader from '@layouts/user/headers/MainHeader';
 import MainFooter from '@layouts/user/footers/MainFooter';
 
+/* AI 챗봇 */
+import AiChatBot from '@components/modules/AiChatBot';
 
 const UserLayout = () => {
   return (
@@ -21,6 +23,9 @@ const UserLayout = () => {
 
         {/* Footer 영역 */}
         <MainFooter />
+
+        {/* AI 챗봇 */}
+        <AiChatBot />
       </div>
     </ThemeProvider>
   );
