@@ -131,6 +131,7 @@ const CommentSection = ({
   setReportedCommentIds,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const commentsPerPage = 5;
   const totalPages = Math.ceil(comments.length / commentsPerPage);
@@ -141,14 +142,22 @@ const CommentSection = ({
     return comments.slice(startIndex, endIndex);
   }, [comments, currentPage]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     if (!currentUserId) {
       openLoginModal?.();
       return;
     }
 
-    handleCommentSubmit();
-    setCurrentPage(1);
+    setIsSubmitting(true);
+
+    try {
+      await handleCommentSubmit();
+      setCurrentPage(1);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const goPage = (page) => {
@@ -186,8 +195,9 @@ const CommentSection = ({
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="rounded-xl bg-emerald-600 px-6 py-2.5 fs-down-1 font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-95">
-                댓글 등록
+                disabled={isSubmitting}
+                className="rounded-xl bg-emerald-600 px-6 py-2.5 fs-down-1 font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400">
+                {isSubmitting ? "등록중..." : "댓글 등록"}
               </button>
             </div>
           </div>

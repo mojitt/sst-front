@@ -382,7 +382,7 @@ const CommunityLifeDetail = () => {
       return;
     }
     const commNo = post.commNo ?? post.id;
-    api
+    return api
       .post("/comments", {
         cmntCommNo: commNo,
         cmntMbrId: currentUserId,

@@ -8,8 +8,6 @@ export const openReportModal = async ({
   cmntNo = null,
   reviewNo = null,
 } = {}) => {
-
-
   const isComment = type === "comment";
   const isReview = type === "review";
 
@@ -38,7 +36,6 @@ export const openReportModal = async ({
 
     html: `
       <div style="display:flex; flex-direction:column; gap:10px; text-align:left; margin-top:8px;">
-
         <label style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1.5px solid #e5e7eb; border-radius:12px; cursor:pointer;">
           <input type="radio" name="${name}" value="${firstText}" data-code="RSN002" style="accent-color:#f97316;" />
           ${firstText}
@@ -61,7 +58,6 @@ export const openReportModal = async ({
             placeholder="기타 신고 내용을 입력해주세요."
             style="width:100%; border:1.5px solid #e5e7eb; border-radius:10px; padding:10px;"></textarea>
         </div>
-
       </div>
     `,
 
@@ -71,7 +67,11 @@ export const openReportModal = async ({
     confirmButtonColor: "#f97316",
     cancelButtonColor: "#9ca3af",
 
-    preConfirm: () => {
+    showLoaderOnConfirm: true,
+    allowOutsideClick: () => !Swal.isLoading(),
+    allowEscapeKey: () => !Swal.isLoading(),
+
+    preConfirm: async () => {
       const selected = document.querySelector(`input[name="${name}"]:checked`);
 
       if (!selected) {
@@ -84,14 +84,16 @@ export const openReportModal = async ({
 
       if (selected.value === "기타") {
         const val = document.getElementById(etcInput)?.value?.trim();
+
         if (!val) {
           Swal.showValidationMessage("기타 내용을 입력해주세요.");
           return false;
         }
+
         reasonContent = val;
       }
 
-      return {
+      const payload = {
         rptTypeCd,
         rptCommNo: commNo,
         rptCmntNo: cmntNo,
@@ -99,54 +101,48 @@ export const openReportModal = async ({
         rptReasonCd: reasonCd,
         rptReasonContent: reasonContent,
       };
+
+      try {
+        const res = await api.post("/reports", payload);
+
+        return {
+          blinded: res.data === 2,
+        };
+      } catch (err) {
+        Swal.showValidationMessage(
+          err.response?.data?.message || "신고 처리 중 문제가 발생했습니다."
+        );
+
+        return false;
+      }
     },
   });
 
   if (!result.isConfirmed) return;
 
-  try {
-  console.log("신고 전송 데이터:", result.value);
-
-    const res = await api.post("/reports", result.value);
-
-    const blinded = res.data === 2;
-
-    if (blinded) {
-
-      await Swal.fire({
-        icon: "success",
-        title: "블라인드 처리 완료",
-        text: "신고 누적으로 블라인드 처리되었습니다.",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-
-      return {
-        blinded: true,
-      };
-    }
-
+  if (result.value?.blinded) {
     await Swal.fire({
       icon: "success",
-      title: "신고 완료",
-      text: "신고가 정상적으로 접수되었습니다.",
+      title: "블라인드 처리 완료",
+      text: "신고 누적으로 블라인드 처리되었습니다.",
       timer: 1500,
       showConfirmButton: false,
     });
 
     return {
-      blinded: false,
+      blinded: true,
     };
-
-  } catch (err) {
-    console.error("신고 실패:", err);
-
-    await Swal.fire({
-      icon: "error",
-      title: "신고 실패",
-      text:
-        err.response?.data?.message ||
-        "신고 처리 중 문제가 발생했습니다.",
-    });
   }
+
+  await Swal.fire({
+    icon: "success",
+    title: "신고 완료",
+    text: "신고가 정상적으로 접수되었습니다.",
+    timer: 1500,
+    showConfirmButton: false,
+  });
+
+  return {
+    blinded: false,
+  };
 };
