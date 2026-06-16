@@ -255,7 +255,7 @@ const CommunityHotplaceDetail = () => {
 
     const commNo = currentPost.commNo ?? currentPost.id;
 
-    api
+    return api
       .post("/comments", {
         cmntCommNo: commNo,
         cmntMbrId: currentUserId,

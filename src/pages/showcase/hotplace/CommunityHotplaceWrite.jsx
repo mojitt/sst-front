@@ -27,25 +27,22 @@ const CommunityHotplaceWrite = () => {
   const [notFound, setNotFound] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const [imagePreviews, setImagePreviews] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [existingImageUrls, setExistingImageUrls] = useState([]);
-
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
   const [regions, setRegions] = useState([]);
-
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-
   const [placeName, setPlaceName] = useState("");
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isComposing, setIsComposing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 이미지 URL 변환
   const getImageUrl = (url) => {
@@ -263,8 +260,10 @@ const CommunityHotplaceWrite = () => {
   );
 
   // 게시글 등록 및 수정 처리
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
     
     const finalTags = Array.from(
       new Set(
@@ -286,6 +285,7 @@ const CommunityHotplaceWrite = () => {
       alert("핫플거리는 사진을 1장 이상 등록해주세요.");
       return;
     }
+    setIsSubmitting(true);
 
     if (isEditMode) {
       const payload = {
@@ -314,11 +314,14 @@ const CommunityHotplaceWrite = () => {
       } catch (error) {
           console.error("글 수정 실패:", error);
         alert("글 수정에 실패했습니다.");
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       // 로그인 여부 확인
       if (!user?.mbrId) {
         alert("로그인이 필요합니다.");
+        setIsSubmitting(false);
         navigate("/login");
         return;
       }
@@ -346,6 +349,8 @@ const CommunityHotplaceWrite = () => {
       } catch (error) {
           console.error("글 등록 실패:", error);
         alert("글 등록에 실패했습니다.");
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -356,7 +361,8 @@ const CommunityHotplaceWrite = () => {
       descriptionText={isEditMode ? "작성한 경기도 여행 순간을 수정해보세요." : "나만의 경기도 여행 순간을 기록해 보세요."}
       onSubmit={handleSubmit}
       onCancel={() => navigate(-1)}
-      submitText="저장하기">
+      submitText={isSubmitting ? "저장중..." : "저장하기"}
+      submitDisabled={isSubmitting}>
       {/* 지역 및 장소 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <RegionSelect

@@ -39,6 +39,7 @@ const CommunityLifeWrite = () => {
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [regions, setRegions] = useState([]);
   const [isComposing, setIsComposing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 이미지 URL 생성
   const getImageUrl = (url) => {
@@ -343,6 +344,7 @@ const CommunityLifeWrite = () => {
   // 게시글 등록 및 수정 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const finalTags = Array.from(
       new Set(
@@ -371,6 +373,13 @@ const CommunityLifeWrite = () => {
       alert("일정에서 장소를 가져와주세요.");
       return;
     }
+
+    if (!user?.mbrId) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    setIsSubmitting(true);
 
     const payload = {
       commTitle: title,
@@ -414,6 +423,8 @@ const CommunityLifeWrite = () => {
           err
         );
       alert(isEditMode ? "글 수정에 실패했습니다." : "글 등록에 실패했습니다.");
+    }finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -436,7 +447,8 @@ const CommunityLifeWrite = () => {
         }
         onSubmit={handleSubmit}
         onCancel={() => navigate(-1)}
-        submitText="저장하기">
+        submitText={isSubmitting ? "저장중..." : "저장하기"}
+        submitDisabled={isSubmitting}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <RegionSelect
             selectedRegion={selectedRegion}
