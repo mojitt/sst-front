@@ -35,6 +35,7 @@ const CommunityLife = () => {
   const [showModal, setShowModal] = useState(false);
   const [schedules, setSchedules] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [likeLoadingPosts, setLikeLoadingPosts] = useState({});
 
   // 처음 진입 시 로그인 사용자 조회
   useEffect(() => {
@@ -243,6 +244,13 @@ const CommunityLife = () => {
       return;
     }
 
+    if (likeLoadingPosts[postId]) return;
+
+    setLikeLoadingPosts((prev) => ({
+      ...prev,
+      [postId]: true,
+    }));
+
     api
       .post(`/community/${postId}/like`, null, {
         params: {
@@ -272,6 +280,12 @@ const CommunityLife = () => {
       })
       .catch((err) => {
         console.error("좋아요 처리 실패:", err);
+      })
+      .finally(() => {
+        setLikeLoadingPosts((prev) => ({
+          ...prev,
+          [postId]: false,
+        }));
       });
   };
 
@@ -364,6 +378,8 @@ const CommunityLife = () => {
 
                 //  좋아요 상태 전달
                 liked={!!likedPosts[post.id]}
+
+                likeLoading={!!likeLoadingPosts[post.id]}
 
                 //  좋아요 클릭 이벤트 전달
                 onToggleLike={toggleLike}

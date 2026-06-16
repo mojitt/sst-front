@@ -32,6 +32,7 @@ const HotplaceStats = ({
   navigate,
   handleDeletePost,
   handleLikeClick,
+  likeLoading = false,
 }) => {
   return (
     <>
@@ -61,8 +62,12 @@ const HotplaceStats = ({
         <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-4 text-center">
           <button
             type="button"
-            onClick={handleLikeClick}
-            className={`rounded-2xl cursor-pointer border border-transparent px-3 py-4 transition active:scale-95 ${
+            disabled={likeLoading}
+            onClick={() => {
+              if (likeLoading) return;
+              handleLikeClick();
+            }}
+            className={`rounded-2xl cursor-pointer border border-transparent px-3 py-4 transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${
               isLiked
                 ? "bg-blue-100 ring-2 ring-blue-100"
                 : "bg-gray-50 hover:border-blue-200 hover:bg-blue-50"
