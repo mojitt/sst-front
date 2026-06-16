@@ -5,6 +5,7 @@ const WriteForm = ({
   onSubmit,
   onCancel,
   submitText,
+  submitDisabled,
   children,
 }) => {
   return (
@@ -33,6 +34,7 @@ const WriteForm = ({
 
               <button
                 type="submit"
+                disabled={submitDisabled}
                 className="px-6 py-2.5 bg-[#009277] text-white font-semibold rounded-lg hover:bg-[#007a63] shadow-md transition-all">
                 {submitText}
               </button>
