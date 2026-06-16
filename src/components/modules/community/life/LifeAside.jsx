@@ -65,6 +65,7 @@ const LifeAside = ({
   onCommentClick,
   handleDeletePost,
   openReportModal,
+  likeLoading = false,
 }) => {
   return (
     <aside className="h-fit rounded-3xl border border-gray-100 bg-white p-6 shadow-sm lg:sticky lg:top-28 space-y-6">
@@ -159,7 +160,11 @@ const LifeAside = ({
       <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-4 text-center">
         <button
           type="button"
-          onClick={handleLikeClick}
+          disabled={likeLoading}
+          onClick={() => {
+            if (likeLoading) return;
+            handleLikeClick();
+          }}
           className={`rounded-2xl cursor-pointer border border-transparent px-3 py-4 transition ${
             isLiked
               ? "bg-blue-100 ring-2 ring-blue-100"

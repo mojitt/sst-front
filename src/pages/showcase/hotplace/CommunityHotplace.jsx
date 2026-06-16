@@ -36,6 +36,7 @@ const CommunityHotplace = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [likeLoadingPosts, setLikeLoadingPosts] = useState({});
 
   // 게시글 목록 조회
   const fetchPosts = () => {
@@ -184,11 +185,20 @@ const CommunityHotplace = () => {
   }, [searchParams]);
 
   // 좋아요 토글 처리
-  const toggleLike = (postId) => {
-    if (!currentUserId && !getConfig('user.isAuth')) {
+  // 좋아요 토글 처리
+const toggleLike = (postId) => {
+  if (!currentUserId && !getConfig('user.isAuth')) {
       setShowLoginModal(true);
       return;
     }
+
+    // 이미 해당 게시글 좋아요 요청 중이면 중복 클릭 방지
+    if (likeLoadingPosts[postId]) return;
+
+    setLikeLoadingPosts((prev) => ({
+      ...prev,
+      [postId]: true,
+    }));
 
     api
       .post(`/community/${postId}/like`, null, {
@@ -219,6 +229,12 @@ const CommunityHotplace = () => {
       })
       .catch((err) => {
         console.error("좋아요 처리 실패:", err);
+      })
+      .finally(() => {
+        setLikeLoadingPosts((prev) => ({
+          ...prev,
+          [postId]: false,
+        }));
       });
   };
 
@@ -293,6 +309,7 @@ const CommunityHotplace = () => {
               <CommunityHotplaceCard
                 post={post}
                 liked={!!likedPosts[post.id]}
+                likeLoading={!!likeLoadingPosts[post.id]}
                 onClick={() => navigate(`/showcase/hotplace/view/${post.id}`)}
                 onToggleLike={() => toggleLike(post.id)}
                 onTagClick={(tag) => {

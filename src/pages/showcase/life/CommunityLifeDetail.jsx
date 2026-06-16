@@ -29,6 +29,7 @@ const CommunityLifeDetail = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const isLogin = getConfig('user.isAuth');
   const [isLiked, setIsLiked] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -452,16 +453,23 @@ const CommunityLifeDetail = () => {
 
   // 게시글 좋아요 처리
   const handleLikeClick = async () => {
+    if (likeLoading) return;
+
     if (!currentUserId && !isLogin) {
       setShowLoginModal(true);
       return;
     }
+
     try {
+      setLikeLoading(true);
+
       const res = await api.post(
         `/community/${post.commNo}/like?mbrId=${currentUserId}`
       );
+
       const liked = res.data;
       setIsLiked(liked);
+
       setPost((prev) => ({
         ...prev,
         wishCnt: liked
@@ -471,6 +479,8 @@ const CommunityLifeDetail = () => {
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
       alert("좋아요 처리에 실패했습니다.");
+    } finally {
+      setLikeLoading(false);
     }
   };
 
@@ -513,6 +523,7 @@ const CommunityLifeDetail = () => {
               isLiked={isLiked}
               handleLikeClick={handleLikeClick}
               onCommentClick={scrollToComments}
+              likeLoading={likeLoading}
             />
 
             <article className="bg-white rounded-3xl border border-gray-100 p-6 md:p-10 shadow-sm">
@@ -547,6 +558,7 @@ const CommunityLifeDetail = () => {
             handleImportSchedule={handleImportSchedule}
             handleMakePlan={handleMakePlan}
             handleDeletePost={handleDeletePost}
+            likeLoading={likeLoading}
             openReportModal={async () => {
               const result = await openReportModal({
                 type: "post",

@@ -47,6 +47,7 @@ const LifePostHeader = ({
   isLiked,
   handleLikeClick,
   onCommentClick,
+  likeLoading = false,
 }) => {
   return (
     <div className="relative bg-white rounded-3xl border border-gray-100 p-6 pr-32 pb-16 shadow-sm">
@@ -92,7 +93,11 @@ const LifePostHeader = ({
         <div className="absolute bottom-5 left-6 flex flex-wrap items-center gap-4 fs-down-1">
           <button
             type="button"
-            onClick={handleLikeClick}
+            disabled={likeLoading}
+            onClick={() => {
+              if (likeLoading) return;
+              handleLikeClick();
+            }}
             className={`shrink-0 inline-flex cursor-pointer items-center gap-1.5 text-sm font-bold transition-colors active:scale-95 ${
               isLiked ? "text-blue-500" : "text-gray-900 hover:text-blue-500"
             }`}>
