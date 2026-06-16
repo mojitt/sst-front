@@ -56,7 +56,6 @@ const Faq = () => {
 
     /* 페이지 상단 이동 */
     window.scrollTo({ top: 0 });
-
   }, [currentPage]);
 
   return (
@@ -84,7 +83,7 @@ const Faq = () => {
           onPageChange={setCurrentPage}
         />
       </div>
-
+      
     </CustomerSupportLayout>
   );
 };
