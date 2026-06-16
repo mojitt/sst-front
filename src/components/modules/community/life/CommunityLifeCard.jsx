@@ -182,7 +182,7 @@ const CommunityLifeCard = ({
             </h3>
 
             {/* 설명 */}
-            <p className="fs-down-1 text-gray-500 leading-relaxed line-clamp-2 mb-4 break-all">
+            <p className="fs-down-1 text-gray-500 leading-relaxed line-clamp-1 mb-4 break-all">
               {post.description}
             </p>
 
