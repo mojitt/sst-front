@@ -4,8 +4,6 @@ on:
   pull_request:
     branches: [ "main" ]
     types: [closed]
-  push:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -92,6 +90,3 @@ jobs:
               rm /tmp/dist.tar.gz
               echo "배포 완료!"
               ls -lh "$DEPLOY_PATH/dist"
-              sudo certbot renew
-              sudo systemctl reload nginx
-              echo '0 3 * * * /usr/bin/certbot renew —quiet —deploy-hook "systemctl reload nginx"' | sudo crontab -
